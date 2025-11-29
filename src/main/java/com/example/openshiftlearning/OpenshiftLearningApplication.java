@@ -15,7 +15,7 @@ public class OpenshiftLearningApplication {
 
     @GetMapping
     public String api() {
-        return "Hello World";
+        return "Hello World-1!";
     }
 
 }
