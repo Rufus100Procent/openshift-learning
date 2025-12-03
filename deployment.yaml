@@ -1,0 +1,93 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: learning-openshift
+  labels:
+    app: learning-openshift
+---
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: learning-openshift
+  labels:
+    app: learning-openshift
+spec:
+  output:
+    to:
+      kind: ImageStreamTag
+      name: learning-openshift:latest
+  source:
+    type: Git
+    git:
+      uri: https://github.com/Rufus100Procent/openshift-learning.git
+    contextDir: .
+  strategy:
+    type: Docker
+    dockerStrategy:
+      dockerfilePath: Dockerfile
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  name: learning-openshift
+  labels:
+    app: learning-openshift
+spec:
+  replicas: 1
+  selector:
+    app: learning-openshift
+    deploymentconfig: learning-openshift
+  template:
+    metadata:
+      labels:
+        app: learning-openshift
+        deploymentconfig: learning-openshift
+    spec:
+      containers:
+        - name: learning-openshift
+          image: ""
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+      imageChangeParams:
+        automatic: true
+        containerNames:
+          - learning-openshift
+        from:
+          kind: ImageStreamTag
+          name: learning-openshift:latest
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: learning-openshift
+  labels:
+    app: learning-openshift
+spec:
+  selector:
+    app: learning-openshift
+    deploymentconfig: learning-openshift
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: learning-openshift
+  labels:
+    app: learning-openshift
+spec:
+  to:
+    kind: Service
+    name: learning-openshift
+  port:
+    targetPort: http
