@@ -36,3 +36,10 @@ The `deployment.yaml` file contains everything: image build, deployment, service
 * `http://<your-route-host>/`
 
 You should see: Hello World-1!
+
+### Removing (destroying) the application
+
+* `oc delete -f deployment.yaml`
+#### Verify removal
+
+* `oc get pods -l app=learning-openshift`
