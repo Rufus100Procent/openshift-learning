@@ -27,7 +27,9 @@ The `deployment.yaml` file contains everything: image build, deployment, service
 
 ### Verify
 #### Check that the pod is running
- * `oc get pods -l app=learning-openshift`
+note: It may take a moment before the container starts inside the pod
+
+* `oc get pods -l app=learning-openshift`
 
 #### Get the Route URL
 * `oc get route learning-openshift -o jsonpath='{.spec.host}{"\n"}'`
